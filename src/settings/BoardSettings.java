@@ -1,4 +1,4 @@
-package src;
+package src.settings;
 
 // This class holds settings related to the board state.
 public class BoardSettings {

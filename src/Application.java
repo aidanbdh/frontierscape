@@ -19,13 +19,11 @@ public class Application extends JFrame {
         
         add(board);
 
-        setSize(board.settings.getWidth() * tileSize, board.settings.getHeight() * tileSize);
+        setSize(board.settings.getWidth() * tileSize, board.settings.getHeight() * tileSize + 30);
 
         setTitle("Fronteirscape");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        // Generate the agents and tiles based on board state
-        // board.render();
     }
 
     public static void main(String[] args) {
