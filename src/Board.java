@@ -1,5 +1,4 @@
 package src;
-import javax.swing.JPanel;
 
 import src.settings.AgentSettings;
 import src.settings.BoardSettings;
@@ -9,6 +8,8 @@ import java.util.Random;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.*;
+import javax.swing.JPanel;
+
 
 public class Board extends JPanel {
     // Settings modifiable in startup
@@ -47,8 +48,8 @@ public class Board extends JPanel {
         agents = new Agent[settings.getAgents()];
         // Default agent settings
         int[] vision = {1, 5};
-        int[][] initialResources = {{1, 10}};
-        int[][] metabolism = {{1, 3}};
+        int[][] initialResources = {{1, 2}};
+        int[][] metabolism = {{1, 2}};
         AgentSettings agentSettings = new AgentSettings(vision, initialResources, metabolism);
         // Put agents on the board
         for (int i = 0; i < agents.length; i++) {
@@ -67,7 +68,6 @@ public class Board extends JPanel {
                 } else {
                     // Associate the agent with the tile it is on
                     tile.agent = agents[i];
-                    agents[i].tile = tile;
                     agents[i].y = (int)Math.floor(location/settings.getWidth());
                     agents[i].x = location % settings.getHeight();
                     placed = true;
@@ -89,15 +89,18 @@ public class Board extends JPanel {
 
     // This function upkeeps each tile and agent
     public void next() {
-        // Run upkeep on each tile and agent
+        // Run upkeep on each active agent on the board
+        for (Agent agent : agents) {
+            if (agent.active) {
+                agent.upkeep();
+            } else {
+                agent = null;
+            }
+        }
+        // Run upkeep on each tile
         for (Tile[] tiles : tiles) {
             for (Tile tile: tiles) {
-                // Perform the tile's upkeep
                 tile.upkeep();
-                // Perform the agent's upkeep
-                if (tile.agent != null) {
-                    tile.agent.upkeep();
-                }
             }
         }
         // Increment epoch

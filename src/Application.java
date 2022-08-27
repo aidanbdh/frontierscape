@@ -1,6 +1,6 @@
 package src;
-import javax.swing.JFrame;
 
+import javax.swing.JFrame;
 import java.awt.EventQueue;
 
 public class Application extends JFrame {
@@ -21,7 +21,7 @@ public class Application extends JFrame {
 
         setSize(board.settings.getWidth() * tileSize, board.settings.getHeight() * tileSize + 30);
 
-        setTitle("Fronteirscape");
+        setTitle("Frontierscape");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
