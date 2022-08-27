@@ -1,6 +1,7 @@
 package src;
 import javax.swing.JPanel;
 
+import src.settings.AgentSettings;
 import src.settings.BoardSettings;
 import src.settings.TileSettings;
 
@@ -26,9 +27,9 @@ public class Board extends JPanel {
 
     public Board(int size) {
         // Default board settings
-        settings = new BoardSettings(100, 50, 50, true, 750);
+        settings = new BoardSettings(100, 50, 50, true, 500);
         // Default tile settings
-        int[][] initials = {{0, 10}};
+        int[][] initials = {{0, 5}};
         TileSettings tileSettings = new TileSettings(initials);
         // Save the size of each tile
         tileSize = size;
@@ -44,10 +45,15 @@ public class Board extends JPanel {
 
         // Initialize the agents array
         agents = new Agent[settings.getAgents()];
+        // Default agent settings
+        int[] vision = {1, 5};
+        int[][] initialResources = {{1, 10}};
+        int[][] metabolism = {{1, 3}};
+        AgentSettings agentSettings = new AgentSettings(vision, initialResources, metabolism);
         // Put agents on the board
         for (int i = 0; i < agents.length; i++) {
             // Create new agent at i
-            agents[i] = new Agent(tileSize, tiles);
+            agents[i] = new Agent(tileSize, tiles, agentSettings);
             // Randomize agent locations
             int location = rand.nextInt(tiles.length * tiles[0].length);
             boolean placed = false;
@@ -72,7 +78,7 @@ public class Board extends JPanel {
         // Set the schedule if applicable
         if (settings.autoEpoch) {
             schedule(settings.interval);
-            System.out.print("Auto epoch enabled");
+            System.out.print("Auto epoch enabled\n");
         }
     }
 
@@ -98,11 +104,15 @@ public class Board extends JPanel {
         epochs++;
         // Run action on each agent
         for (Agent agent : agents) {
-            agent.action();
+            if (agent.active == true) {
+                agent.action();            
+            }
         }
         // Run execute on each agent
         for (Agent agent : agents) {
-            agent.execute();
+            if (agent.active == true) {
+                agent.execute();
+            }
         }
         // Repaint the board
         repaint();

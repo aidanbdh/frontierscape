@@ -36,15 +36,16 @@ public class Tile {
         return -1;
     }
 
-    public int interact(String resource, int amount) {
+    public int interact(int resource) {
+        return interact(resource, -1);
+    }
+
+    public int interact(int resource, int amount) {
+        // Check for bad index or no resource available
+        if (resource >= resources.length || resources[resource] == null)
+            return 0;
         // Harvest specified resources
-        for(int i = 0; i < resources.length; i++) {
-            if (resources[i].name == resource) {
-                return resources[i].harvest();
-            }
-        }
-        // Return 0 if none of that resource available
-        return 0;
+        return resources[resource].harvest(amount);
     }
     
 }

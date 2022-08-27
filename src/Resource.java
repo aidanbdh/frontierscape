@@ -5,8 +5,8 @@ import java.util.Random;
 public class Resource {
     Random rand = new Random();
     public String name;
-    int cap;
-    int value;
+    public int cap;
+    public int value;
 
     public Resource(String label, int min, int max) {
         name = label;
@@ -28,6 +28,10 @@ public class Resource {
     }
 
     public int harvest(int amount) {
+        // Check for complete harvest
+        if (amount == -1) {
+            amount = value;
+        }
         // Reduce the amount available 
         value -= amount;
         // Check for attempted overharvesting
