@@ -24,7 +24,7 @@ public class Resource {
 
     // Harvest max if no specified value
     public int harvest() {
-        return harvest(value);
+        return harvest(-1);
     }
 
     public int harvest(int amount) {

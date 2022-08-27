@@ -2,6 +2,9 @@ package src;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
+
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -12,7 +15,6 @@ import src.settings.AgentSettings;
 public class Agent {
 
     public Image sprite;
-    public Tile tile;
     public Tile[][] tiles;
     public int x;
     public int y;
@@ -20,7 +22,7 @@ public class Agent {
     public Boolean updated = false;
     public int vision;
     public int[][] resources; // [value, metabolism]
-    private Action[] queue = new Action[10];
+    private Queue<Action> queue = new LinkedList<>();
     public boolean active = true;
     // Randomizer
     private Random rand = new Random();
@@ -43,6 +45,7 @@ public class Agent {
     }
 
     public void upkeep() {
+        Tile tile = tiles[y][x];
         // Check each resource
         for (int i = 0; i < resources.length; i++) {
             // Harvest some of that resource
@@ -57,18 +60,80 @@ public class Agent {
     };
     
     public void action() {
-        // Queue a random movement event for testing
-        int ydirection = rand.nextInt(3);
-        int xdirection = rand.nextInt(3);
-        queue[0] = new Action("move", ydirection - 1, xdirection - 1);
+        Tile tile = tiles[y][x];
+        // Look for tiles with more food up to vision away
+        int[] coords = {y, x};
+        // Get the current tile's data
+        int[] currentTile = tile.inspect();
+        int current = 0;
+        // Get the best resource from the current tile
+        for (int val : currentTile) {
+            if (val > current) {
+                current = val;
+            }
+        }
+        // Initialize max
+        int max = current;
+        // Check surrounding tiles
+        for (int i = y - vision; i <= y + vision; i++) {
+            // Check for out of bounds
+            if (i < 0) {
+                i = 0;
+            } else if (i >= tiles.length) {
+                break;
+            }
+            for (int j = x - vision; j <= x + vision; j++) {
+                // Check for out of bounds
+                if (j < 0) {
+                    j = 0;
+                } else if (j >= tiles[0].length) {
+                    break;
+                }
+                //if (x == y)
+                    System.out.print(i + "," + j + "\n" + max + "\n" + current + '\n');
+                // Check if occupied
+                if (tiles[i][j].agent != null) {
+                    continue;
+                }
+                // Inspect all resources on the tile
+                int[] data = tiles[i][j].inspect();
+                // Check the values vs max
+                for (int val : data) {
+                    if (val > max) {
+                        max = val;
+                        coords[0] = i;
+                        coords[1] = j;
+                    }
+                }
+            }
+        }
+        // Check for movement
+        if (max > current) {
+            int[] direction = {0, 0};
+            // Move towards the tile
+            if (coords[0] < y) {
+                direction[0] = -1;
+            } else if (coords[0] > y) {
+                direction[0] = 1;
+            }
+            if (coords[1] < x) {
+                direction[1] = -1;
+            } else if (coords[1] > x) {
+                direction[1] = 1;
+            }
+            // Add the action to the queue 
+            System.out.print("Max: " + max + "\nCurent: " + current + '\n');
+            System.out.print("Moving: " + direction[0] + "," + direction[1] + "\nTowards: " + coords[0] + "," + coords[1] + "\nFrom: " + y + "," + x + '\n');
+            queue.add(new Action("move", direction[0], direction[1]));
+        }
     };
 
     public void execute() {
         // Run events
-        for (Action action : queue) {
-            if (action == null) {
-                break;
-            }
+        for (int i = 0; i < queue.size(); i++) {
+            // Remove the action to be executed from the queue
+            Action action = queue.remove();
+            // Handle move actions
             if (action.type == "move") {
                 // Check for the edge of the board
                 if(y + action.value1 < 0 || y + action.value1 >= tiles.length) {
@@ -93,7 +158,8 @@ public class Agent {
 
     // Returns the agent to its last known position
     public void undo() {
-        queue[0] = history.pop();
+        queue.add(history.pop());
+        execute();
     };
 
     public void remove() {

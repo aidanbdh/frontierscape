@@ -26,14 +26,31 @@ public class Tile {
     };
 
     public int inspect(String resource) {
-        // Find the correct resource to return
+        // Find the correct index of resource to return
         for(int i = 0; i < resources.length; i++) {
             if (resources[i].name == resource) {
-                return resources[i].inspect();
+                return inspect(i);
             }
         }
         // This should never happen
         return -1;
+    }
+
+    // Inspect a resource based on index
+    public int inspect(int i) {
+        return resources[i].inspect();
+    }
+
+    // Inspect all resources
+    public int[] inspect() {
+        // Array of resource data to return
+        int[] data = new int[resources.length];
+        // Inspect all resources
+        for(int i = 0; i < resources.length; i++) {
+            data[i] = inspect(i);
+        }
+        // Return the inspected resources
+        return data;
     }
 
     public int interact(int resource) {
