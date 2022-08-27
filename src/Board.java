@@ -1,5 +1,9 @@
 package src;
 import javax.swing.JPanel;
+
+import src.settings.BoardSettings;
+import src.settings.TileSettings;
+
 import java.util.Random;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,6 +27,9 @@ public class Board extends JPanel {
     public Board(int size) {
         // Default board settings
         settings = new BoardSettings(100, 50, 50, true, 750);
+        // Default tile settings
+        int[][] initials = {{0, 10}};
+        TileSettings tileSettings = new TileSettings(initials);
         // Save the size of each tile
         tileSize = size;
         // Initialize the tiles array
@@ -30,7 +37,7 @@ public class Board extends JPanel {
         // Add new tiles to each location
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
-                tiles[i][j] = new Tile();
+                tiles[i][j] = new Tile(tileSettings);
             }
         }
         System.out.print("Initialized Tiles\n");
